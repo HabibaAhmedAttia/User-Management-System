@@ -10,9 +10,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-@WebServlet("/addUser")
-public class AddUser extends HttpServlet {
-    private final static String query = "insert into user(name,email,mobile,dob,city,gender) values(?,?,?,?,?,?)";
+@WebServlet("/edit")
+public class UpdatedUser extends HttpServlet {
+    private final static String query = "update user set name=?,email=?,mobile=?,dob=?,city=?,gender=? where id=?";
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         //get PrintWriter
@@ -20,9 +20,10 @@ public class AddUser extends HttpServlet {
         //set content type
         res.setContentType("text/html");
         //link the bootstrap
-        pw.println("<link rel='stylesheet' href='css/bootstrap.css'/>");
+        pw.println("<link rel='stylesheet' href='css/bootstrap.css'></link>");
         //get the values
-        String name = req.getParameter("userName");
+        int id = Integer.parseInt(req.getParameter("id"));
+        String name = req.getParameter("name");
         String email = req.getParameter("email");
         String mobile = req.getParameter("mobile");
         String dob = req.getParameter("dob");
@@ -31,7 +32,7 @@ public class AddUser extends HttpServlet {
         //load the JDBC driver
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (Exception e) {
+        }catch(Exception e) {
             e.printStackTrace();
         }
         //generate the connection
@@ -44,13 +45,14 @@ public class AddUser extends HttpServlet {
             ps.setString(4, dob);
             ps.setString(5, city);
             ps.setString(6, gender);
+            ps.setInt(7, id);
             //execute the query
             int count = ps.executeUpdate();
             pw.println("<div class='card' style='margin:auto;width:300px;margin-top:100px'>");
             if(count==1) {
-                pw.println("<h2 class='bg-danger text-light text-center'>Record Registered Successfully</h2>");
+                pw.println("<h2 class='bg-danger text-light text-center'>Record Edited Successfully</h2>");
             }else {
-                pw.println("<h2 class='bg-danger text-light text-center'>Record Not Registered</h2>");
+                pw.println("<h2 class='bg-danger text-light text-center'>Record Not Edited</h2>");
             }
         }catch(SQLException se) {
             pw.println("<h2 class='bg-danger text-light text-center'>"+se.getMessage()+"</h2>");
@@ -59,6 +61,8 @@ public class AddUser extends HttpServlet {
             e.printStackTrace();
         }
         pw.println("<a href='index.jsp'><button class='btn btn-outline-success'>Home</button></a>");
+        pw.println("&nbsp; &nbsp;");
+        pw.println("<a href='showdata'><button class='btn btn-outline-success'>Show User</button></a>");
         pw.println("</div>");
         //close the stram
         pw.close();
